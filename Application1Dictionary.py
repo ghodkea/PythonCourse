@@ -13,7 +13,7 @@ def WordDefinition(word):
             top_match = get_close_matches("rainn",data.keys())[0]
             print("Did you mean %s instead?" % (top_match))
             choice = input("Enter Y or N: ")
-            if choice == 'Y':
+            if choice.upper() == 'Y':
                 return data[top_match]
             else:
                 return "Word does not exist"
@@ -25,4 +25,10 @@ def WordDefinition(word):
 
 userinput =input("Enter word you want to get the meaning for: ")
 
-print(WordDefinition(userinput))
+output = WordDefinition(userinput)
+
+if type(output) == list:
+    for item in output:
+        print(item)
+else:
+    print(output)
