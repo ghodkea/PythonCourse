@@ -1,12 +1,27 @@
 #accept english word and give its meaning
 import json #to handle JSON files
+import difflib
+from difflib import get_close_matches
+
 data = json.load(open("data.json"))
 
 def WordDefinition(word):
-    try:
-        return data[word.lower()] #in case the user enters all caps. JSON has all lower case stored
-    except KeyError: #in case the word is not in the JSON. It throws a key error. To avoid giving user a bad message, handling in the exception block
-        return "Check the word. If you think the spelling is correct, our aplogies, the word is not yet in the dictionary"
+        word = word.lower()
+        if word in data:
+            return data[word]
+        elif len(get_close_matches(word,data.keys(),cutoff=0.8))>0:
+            top_match = get_close_matches("rainn",data.keys())[0]
+            print("Did you mean %s instead?" % (top_match))
+            choice = input("Enter Y or N: ")
+            if choice == 'Y':
+                return data[top_match]
+            else:
+                return "Word does not exist"
+        else:
+            return "Word does not exist"
+
+
+
 
 userinput =input("Enter word you want to get the meaning for: ")
 
