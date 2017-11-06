@@ -1,8 +1,7 @@
 import requests
 import json
 
-#amitbghodke
-#Zxcv1234$
+
 
 app_id = '5b6f0752'
 app_key = 'fa261a7ff1a3a5852818d35f67f09558'
@@ -26,6 +25,7 @@ if r.status_code==200:
             result_lexical_list=result["lexicalEntries"]
             for lexical_category_loop in result_lexical_list:
                 lexical_category=lexical_category_loop["lexicalCategory"]
+
                 print(lexical_category)
             if lexical_category.lower()=='verb':
 
@@ -41,18 +41,6 @@ if r.status_code==200:
             else:
                 actual_word=word_id.lower()
 
-
-
-
-                #if len(inflection_word_list)==1:
-                    #for inflection_word in inflection_word_list:
-                    #    actual_word=inflection_word["id"]
-                #elif len(inflection_word_list)>1:
-                #    for inflection_word in inflection_word_list:
-                #        if(inflection_word["id"]!=word_id.lower()):
-                #            actual_word=inflection_word["id"]
-                    #else:
-                        #actual_word=word_id.lower()
 
 
 

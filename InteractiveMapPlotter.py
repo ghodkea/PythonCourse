@@ -36,10 +36,12 @@ cutoff_input=float(input("Any threshold you wish to supply. Enter 0 if none: "))
 dataframe=dataframe.loc[(dataframe['DataValue'].astype(float)>cutoff_input) & (dataframe['YearStart'].astype(int)==2015)]
 #print(data)
 #print(data.columns)
-geo_location=list(dataframe["GeoLocation"])
+geo_location_list=list(dataframe["GeoLocation"])
+data_value_list=list(dataframe["DataValue"])
+state_value_list=list(dataframe["LocationDesc"])
 latitude_list=[]
 longitude_list=[]
-for location in geo_location:
+for location in geo_location_list:
     if type(location)==str:
         latitude=float(location.replace("(","").replace(")","").split(",")[0])
         longitude=float(location.replace("(","").replace(")","").split(",")[1])
@@ -48,8 +50,8 @@ for location in geo_location:
         #fg.add_child(folium.Marker(location=[latitude,longitude],popup="Hi I am a marker",icon=folium.Icon(color='green')))
 #latitude_list_top=latitude_list[:104]
 #longitude_list_top=longitude_list[:104]
-for lt,ln in zip(latitude_list,longitude_list):
-    fg.add_child(folium.Marker(location=[lt,ln],popup="Plot",icon=folium.Icon(color='red')))
+for lt,ln,st,dv in zip(latitude_list,longitude_list,state_value_list,data_value_list):
+    fg.add_child(folium.Marker(location=[lt,ln],popup=st+" "+str(dv),icon=folium.Icon(color='red')))
 
 print(len(latitude_list),"States")
 #print(len(longitude_list))
