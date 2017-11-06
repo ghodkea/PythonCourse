@@ -1,5 +1,6 @@
 import folium
 import pandas
+import statistics
 
 map = folium.Map(location=[30.553757,-97.834881],zoom_start=6,tiles="Mapbox Bright")
 fg = folium.FeatureGroup(name="My Map")
@@ -30,30 +31,49 @@ else:
     question_input='None'
 
 #dataframe=dataframe.loc['Alcohol use among youth']
-dataframe=dataframe.loc[question_input]
-cutoff_input=float(input("Any threshold you wish to supply. Enter 0 if none: "))
-#dataframe=dataframe.loc[(dataframe['DataValue'].astype(float)>32) & (dataframe['YearStart'].astype(int)==2015)]
-dataframe=dataframe.loc[(dataframe['DataValue'].astype(float)>cutoff_input) & (dataframe['YearStart'].astype(int)==2015)]
-#print(data)
-#print(data.columns)
-geo_location_list=list(dataframe["GeoLocation"])
-data_value_list=list(dataframe["DataValue"])
-state_value_list=list(dataframe["LocationDesc"])
-latitude_list=[]
-longitude_list=[]
-for location in geo_location_list:
-    if type(location)==str:
-        latitude=float(location.replace("(","").replace(")","").split(",")[0])
-        longitude=float(location.replace("(","").replace(")","").split(",")[1])
-        latitude_list.append(latitude)
-        longitude_list.append(longitude)
-        #fg.add_child(folium.Marker(location=[latitude,longitude],popup="Hi I am a marker",icon=folium.Icon(color='green')))
-#latitude_list_top=latitude_list[:104]
-#longitude_list_top=longitude_list[:104]
-for lt,ln,st,dv in zip(latitude_list,longitude_list,state_value_list,data_value_list):
-    fg.add_child(folium.Marker(location=[lt,ln],popup=st+" "+str(dv),icon=folium.Icon(color='red')))
+if question_input!='None':
+    dataframe=dataframe.loc[question_input]
 
-print(len(latitude_list),"States")
-#print(len(longitude_list))
-map.add_child(fg)
-map.save("Map1.html")
+    cutoff_input=float(input("Any threshold you wish to supply. Enter 0 if none: "))
+    #dataframe=dataframe.loc[(dataframe['DataValue'].astype(float)>32) & (dataframe['YearStart'].astype(int)==2015)]
+    dataframe=dataframe.loc[(dataframe['DataValue'].astype(float)>=cutoff_input) & (dataframe['YearStart'].astype(int)==2015)]
+
+    geo_location_list=list(dataframe["GeoLocation"])
+    data_value_list=list(dataframe["DataValue"])
+    state_value_list=list(dataframe["LocationDesc"])
+    latitude_list=[]
+    longitude_list=[]
+
+    #the below block will help us change the color of marker
+    dv_min=min(float(s) for s in data_value_list)
+    dv_max=max(float(s) for s in data_value_list)
+    dv_mean=statistics.mean(float(s) for s in data_value_list)
+
+    print(dv_min)
+    print(dv_max)
+    print(dv_mean)
+
+    def markup_color_generator(value):
+        if value>=dv_min and value<=dv_mean:
+            return 'orange'
+        elif value>dv_mean and value<=dv_max:
+            return 'red'
+
+    for location in geo_location_list:
+        if type(location)==str:
+            latitude=float(location.replace("(","").replace(")","").split(",")[0])
+            longitude=float(location.replace("(","").replace(")","").split(",")[1])
+            latitude_list.append(latitude)
+            longitude_list.append(longitude)
+
+    #latitude_list_top=latitude_list[:104]
+    #longitude_list_top=longitude_list[:104]
+    for lt,ln,st,dv in zip(latitude_list,longitude_list,state_value_list,data_value_list):
+        fg.add_child(folium.Marker(location=[lt,ln],popup=st+" "+str(dv),icon=folium.Icon(color=markup_color_generator(float(dv)))))
+
+    print(len(latitude_list),"States")
+    #print(len(longitude_list))
+    map.add_child(fg)
+    map.save("Map1.html")
+else:
+    print("select valid input next time")
